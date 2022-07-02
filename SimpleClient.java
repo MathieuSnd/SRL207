@@ -128,6 +128,8 @@ public class SimpleClient {
         }
 
         
+        System.out.print("counting chars file...");
+
         long charcount = 0;
         
         // count characters
