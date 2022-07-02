@@ -89,6 +89,9 @@ public class SimpleServerProgram {
 
         HashMap<String, Integer> map = new HashMap<String, Integer>();
 
+
+        System.out.println("BEGIN MAP");
+
         // read each line of the file
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path)));) {
@@ -111,6 +114,10 @@ public class SimpleServerProgram {
             return;
         }
 
+
+        System.out.println("CREATE SHUFFLE MAPS");
+
+
         // make a map to gather shuffle requests
 
         String[] shuffleMap = new String[peers.length];
@@ -131,6 +138,8 @@ public class SimpleServerProgram {
 
             shuffleMap[serverId] += word + " " + map.get(word) + "\n";
         }
+
+        System.out.println("SEND SHUFFLE REQUESTS");
 
         // send requests to the right servers
         for (int i = 0; i < peers.length; i++) {
