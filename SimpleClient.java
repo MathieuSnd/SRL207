@@ -68,31 +68,6 @@ public class SimpleClient {
         }
     }
 
-    static String[] divideText(String text, int nb_parts) {
-        // split the text in nb_parts parts of equal number of lines
-
-        String[] parts = new String[nb_parts];
-        String[] lines = text.split("\n");
-
-        int minLinesPerPart = lines.length / nb_parts;
-        int linesRest = lines.length % nb_parts;
-
-        int curLine = 0;
-
-        for (int i = 0; i < nb_parts; i++) {
-            int totalPartLines = minLinesPerPart;
-            if (i < linesRest)
-                totalPartLines++;
-
-            for (int j = 0; j < totalPartLines; j++)
-                parts[i] += lines[curLine++] + "\n";
-        }
-
-        assert curLine == lines.length;
-
-        return parts;
-    }
-
     static int fileLineCount(BufferedReader br) {
         int count = 0;
         try {
