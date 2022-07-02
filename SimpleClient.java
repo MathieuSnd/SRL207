@@ -209,7 +209,7 @@ public class SimpleClient {
                     done = Integer.parseInt(response) == serverHosts.size();
 
                     if (!done) {
-                        System.out.println("Waiting for " + server + " to finish... %u", Integer.parseInt(response));
+                        System.out.println("Waiting for " + server + " to finish... " + Integer.parseInt(response));
                         break;
                     }
                 }
