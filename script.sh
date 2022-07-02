@@ -8,5 +8,5 @@ for COMPUTERS in $(seq 3 23); do
     make > log.txt
     
     
-    grep "Results fetched" < log.txt >> results
+    grep "Finished" < log.txt >> results
 done
