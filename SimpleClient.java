@@ -207,7 +207,20 @@ public class SimpleClient {
                 for (String server : serverHosts) {
                     String response = sendServerRequest(server, "STATUS");
                     done = Integer.parseInt(response) == serverHosts.size();
+
+                    if (!done) {
+                        System.out.println("Waiting for " + server + " to finish... %u", Integer.parseInt(response));
+                        break;
+                    }
                 }
+
+                if(!done)
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
             } while(!done);
 
             System.out.println("Finished! " + (System.currentTimeMillis() - start) + " ms");
