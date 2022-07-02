@@ -89,7 +89,6 @@ public class SimpleServerProgram {
 
         HashMap<String, Integer> map = new HashMap<String, Integer>();
 
-
         System.out.println("BEGIN MAP");
 
         // read each line of the file
@@ -114,9 +113,7 @@ public class SimpleServerProgram {
             return;
         }
 
-
         System.out.println("CREATE SHUFFLE MAPS");
-
 
         // make a map to gather shuffle requests
 
@@ -199,112 +196,116 @@ public class SimpleServerProgram {
 
     public static void main(String args[]) {
 
-        ServerSocket listener = null;
+        try (ServerSocket listener = new ServerSocket(PORT);) {
 
-        try {
-            listener = new ServerSocket(PORT);
+            System.out.println("Listening on port " + PORT);
+
+            // Try to open a server socket on port PORT
+            // Note that we can't choose a port less than 1023 if we are not
+            // privileged users (root)
+            while (true) {
+                try {
+                    // Accept client connection request
+                    // Get new Socket at Server.
+                    Socket socketOfServer = listener.accept();
+                    // run serve(socketOfServer) in a new thread
+                    new Thread(new Runnable() {
+                        public void run() {
+                            try {
+                                serve(socketOfServer);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
         } catch (IOException e) {
             System.out.println("cannot listen to port " + PORT + ": " + e);
             System.exit(1);
-        }
-
-        System.out.println("Listening on port " + PORT);
-
-        // Try to open a server socket on port PORT
-        // Note that we can't choose a port less than 1023 if we are not
-        // privileged users (root)
-        while (true) {
-            serve(listener);
         }
     }
 
     static Object mutex = new Object();
 
-    static void serve(ServerSocket listener) {
+    static void serve(Socket socketOfServer) throws IOException {
 
         String line;
+
         BufferedReader is;
         BufferedWriter os;
-        Socket socketOfServer = null;
 
-        try {
+        // Open input and output streams
 
-            // Accept client connection request
-            // Get new Socket at Server.
-            socketOfServer = listener.accept();
+        // new BufferedInputStream(
 
-            // Open input and output streams
+        is = new BufferedReader(new InputStreamReader(socketOfServer.getInputStream()));
+        os = new BufferedWriter(new OutputStreamWriter(socketOfServer.getOutputStream()));
 
-            // new BufferedInputStream(
+        while (true) {
+            // Read data to the server (sent from client).
+            line = is.readLine();
+            if (line == null) {
+                System.out.println("Client disconnected");
+            } else
+                System.out.println("input request: " + line);
 
-            is = new BufferedReader(new InputStreamReader(socketOfServer.getInputStream()));
-            os = new BufferedWriter(new OutputStreamWriter(socketOfServer.getOutputStream()));
-
-            while (true) {
-                // Read data to the server (sent from client).
-                line = is.readLine();
-                if (line == null) {
-                    System.out.println("Client disconnected");
-                } else
-                    System.out.println("input request: " + line);
-
-                if (line.startsWith("PEERS ")) {
-                    // parse peers
-                    try {
-                        peers = line.split(" ")[1].split(";");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else if (line.startsWith("SPLIT ")) {
-                    // read file size
-                    int bytes = Integer.parseInt(line.split(" ")[1]);
-
-                    // download to a file
-                    downloadFile("/tmp/mserandour/splits", is, bytes);
-
-                    new Thread(
-                            new Runnable() {
-                                public void run() {
-                                    // split and map
-                                    splitAndMap("/tmp/mserandour/splits");
-                                }
-                            }).start();
+            if (line.startsWith("PEERS ")) {
+                // parse peers
+                try {
+                    peers = line.split(" ")[1].split(";");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                else if (line.equals("SHUFFLE")) {
-                    // shuffle
+            } else if (line.startsWith("SPLIT ")) {
+                // read file size
+                int bytes = Integer.parseInt(line.split(" ")[1]);
 
-                    while (true) {
-                        line = is.readLine();
+                // download to a file
+                downloadFile("/tmp/mserandour/splits", is, bytes);
 
-                        if (line.equals(""))
-                            break;
+                new Thread(
+                        new Runnable() {
+                            public void run() {
+                                // split and map
+                                splitAndMap("/tmp/mserandour/splits");
+                            }
+                        }).start();
+            } else if (line.equals("SHUFFLE")) {
+                // shuffle
 
-                        String[] words = line.split(" ");
+                while (true) {
+                    line = is.readLine();
 
-                        serveShuffle(words[0], Integer.parseInt(words[1]));
+                    if (line.equals(""))
+                        break;
+
+                    String[] words = line.split(" ");
+
+                    serveShuffle(words[0], Integer.parseInt(words[1]));
+                }
+
+                synchronized (mutex) {
+                    input_shuffle_requests++;
+                }
+            } else if (line.startsWith("GET")) {
+                if (shuffleMap != null)
+                    for (String word : shuffleMap.keySet()) {
+                        String res = word + "=" + shuffleMap.get(word) + ";";
+                        os.write(res);
                     }
+            } else if (line.equals("STATUS")) {
+                os.write(input_shuffle_requests + "\n");
+            } else if (line.equals("QUIT"))
+                break;
 
-                    synchronized (mutex) {
-                        input_shuffle_requests++;
-                    }
-                } else if (line.startsWith("GET")) {
-                    if (shuffleMap != null)
-                        for (String word : shuffleMap.keySet()) {
-                            String res = word + "=" + shuffleMap.get(word) + ";";
-                            os.write(res);
-                        }
-                } else if(line.equals("STATUS")) {
-                      os.write(input_shuffle_requests + "\n");
-                } else if (line.equals("QUIT"))
-                    break;
-
-                os.newLine();
-                os.flush();
-            }
-
-        } catch (IOException e) {
-            System.out.println(e);
-            e.printStackTrace();
+            os.newLine();
+            os.flush();
         }
+
     }
 }
