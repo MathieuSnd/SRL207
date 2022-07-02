@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for COMPUTERS in $(seq 1 23); do
+for COMPUTERS in $(seq 2 23); do
 
     rm -f servers.txt
     head -n $COMPUTERS servers_all.txt > servers.txt
