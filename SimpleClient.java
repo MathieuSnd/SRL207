@@ -148,10 +148,10 @@ public class SimpleClient {
             
             System.out.println("Dispatching file to servers...");
 
-            StringBuffer sb = new StringBuffer();
-
+            
             // send the text to the servers
             for (int i = 0; i < serverHosts.size(); i++) {
+                StringBuffer sb = new StringBuffer();
 
                 // use a buffer to read the file
                 // The size of this buffer is small enough
