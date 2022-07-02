@@ -84,15 +84,16 @@ public class SimpleClient {
     public static void main(String[] args) {
 
         loadServerHosts();
-
-        // send a STATUS request to each server
-        for (String server : serverHosts) {
-            String req = "STATUS";
-            String res = sendServerRequest(server, req);
-            System.out.println(res);
-        }
-
-
+/*
+     // send a STATUS request to each server
+ for (String server : serverHosts) {
+     String req = "STATUS";
+     String res = sendServerRequest(server, req);
+     System.out.println(res);
+    }
+    
+    
+    */
         long start = System.currentTimeMillis();
 
         // build a string with all the servers names

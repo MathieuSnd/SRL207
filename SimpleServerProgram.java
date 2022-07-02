@@ -262,6 +262,9 @@ public class SimpleServerProgram {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                input_shuffle_requests = 0;
+                
             } else if (line.startsWith("SPLIT ")) {
                 // read file size
                 int bytes = Integer.parseInt(line.split(" ")[1]);
