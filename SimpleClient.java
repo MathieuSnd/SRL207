@@ -127,17 +127,25 @@ public class SimpleClient {
                 return;
         }
 
-        long bytesPerPart = 0;
-
-        try {
-            bytesPerPart = Files.size(Paths.get(batchFile)) / serverHosts.size();
-        } catch (IOException e) {
+        
+        long charcount = 0;
+        
+        // count characters
+        try (BufferedReader fileReader = new BufferedReader(new FileReader(batchFile));) {
+            while (fileReader.read() != -1) {
+                charcount++; /*counts the number of characters read*/
+            }
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
+        
+        long charsPerPart = charcount / serverHosts.size();
 
+        
         // dispatch the file to the servers
         try (BufferedReader fileReader = new BufferedReader(new FileReader(batchFile));) {
-
+            
             System.out.println("Dispatching file to servers...");
 
             StringBuffer sb = new StringBuffer();
@@ -149,11 +157,11 @@ public class SimpleClient {
                 // The size of this buffer is small enough
                 // to fit in the CPU cache
                 final int bufferSize = 2 * 1024 * 1024;
-                char[] buffer = new char[(int) bytesPerPart];
+                char[] buffer = new char[(int) charsPerPart];
 
-                fileReader.read(buffer, 0, (int) Math.min(bufferSize, (int) bytesPerPart));
+                fileReader.read(buffer, 0, (int) Math.min(bufferSize, (int) charcount));
 
-                long read = bytesPerPart;
+                long read = charsPerPart;
 
                 // send the rest of cut the word to the server
                 String word = "";
@@ -171,6 +179,7 @@ public class SimpleClient {
                         break;
                 } while (c != ' ');
 
+                
                 sb.append(buffer);
                 sb.append(word);
 
