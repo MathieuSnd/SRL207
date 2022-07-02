@@ -43,7 +43,7 @@ public class SimpleServerProgram {
         }
     }
 
-    static final int max_threads = 8;
+    static final int max_threads = 128;
     static Integer n_threads = 0;
 
     private static int input_shuffle_requests = 0;
