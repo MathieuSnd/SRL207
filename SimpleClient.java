@@ -35,6 +35,8 @@ public class SimpleClient {
             System.err.println("Couldn't read file " + serverHostsFile);
             return;
         }
+
+        System.out.println("Loaded " + serverHosts.size() + " server hosts");
     }
 
     static String sendServerRequest(String server, String req) {
