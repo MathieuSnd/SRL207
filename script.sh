@@ -1,11 +1,12 @@
 #!/bin/bash
 
-for COMPUTERS in $(seq 2 23); do
+for COMPUTERS in $(seq 3 23); do
 
     rm -f servers.txt
     head -n $COMPUTERS servers_all.txt > servers.txt
 
     make > log.txt
-    cat servers.txt
-    grep Results fetched! < log.txt >> results
+    
+    
+    grep "Results fetched" < log.txt >> results
 done
