@@ -92,10 +92,6 @@ public class SimpleClient {
             System.out.println(res);
         }
 
-        return;
-    }
-        static void foo() {
-
 
         long start = System.currentTimeMillis();
 
