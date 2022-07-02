@@ -288,14 +288,13 @@ public class SimpleServerProgram {
                         input_shuffle_requests++;
                     }
                 } else if (line.startsWith("GET")) {
-                    os.write(input_shuffle_requests % peers.length + "\n");
                     if (shuffleMap != null)
                         for (String word : shuffleMap.keySet()) {
                             String res = word + "=" + shuffleMap.get(word) + ";";
                             os.write(res);
                         }
                 } else if(line.equals("STATUS")) {
-                      os.write(input_shuffle_requests % peers.length + "\n");
+                      os.write(input_shuffle_requests + "\n");
                 } else if (line.equals("QUIT"))
                     break;
 
