@@ -117,13 +117,14 @@ public class SimpleServerProgram {
 
         // make a map to gather shuffle requests
 
-        String[] shuffleMap = new String[peers.length];
+        StringBuilder[] shuffleMap = new StringBuilder[peers.length];
 
         for (int i = 0; i < peers.length; i++)
-            shuffleMap[i] = "";
+            shuffleMap[i] = new StringBuilder();
 
         // fill shuffle map:
         // compute hashes of words
+        int count = 0;
         for (String word : map.keySet()) {
             // hash of 'word'
             int hash = word.hashCode();
@@ -132,8 +133,8 @@ public class SimpleServerProgram {
                 hash = -hash;
 
             int serverId = hash % peers.length;
-
-            shuffleMap[serverId] += word + " " + map.get(word) + "\n";
+            shuffleMap[serverId].append(word + " " + map.get(word) + "\n");
+            
         }
 
         System.out.println("SEND SHUFFLE REQUESTS");
@@ -141,7 +142,7 @@ public class SimpleServerProgram {
         // send requests to the right servers
         for (int i = 0; i < peers.length; i++) {
             String serverHost = peers[i];
-            String req = shuffleMap[i];
+            String req = shuffleMap[i].toString();
             // if(req.length() > 0)
 
             // send to every machine, even if there is nothing
