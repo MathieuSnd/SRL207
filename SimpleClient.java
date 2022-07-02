@@ -36,7 +36,7 @@ public class SimpleClient {
             return;
         }
 
-        System.out.println("Loaded " + serverHosts.size() + " server hosts");ddddddddddddddddddddddd
+        System.out.println("Loaded " + serverHosts.size() + " server hosts");
     }
 
     static String sendServerRequest(String server, String req) {
